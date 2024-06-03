@@ -1,11 +1,11 @@
 """
-<h3> Ce fichier contient la partie de liaison de l'application mobile avec la vehicule.</h3>
+<h3> Ce fichier contient le code qui permet de faire controler le mauvement de la charrue</h3>
 
 
-<h3>Auteurs : AIT ALI MHAMED SAADIA & SAFRANI Fatima Ezzahra & EL-MANANI Fatima </h3>
+<h3>Auteurs : SAFRANI Fatima Ezzahra</h3>
 
 
-<h3>Version : 2.0</h3>
+<h3>Version : 1.0</h3>
 
 """
 
