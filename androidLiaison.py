@@ -21,6 +21,18 @@ import methods
 app = Flask(__name__)
 
 @app.route('/move_forward')
+def move_backward():
+    """
+    Cette fonction permet de faire une mauvement vers l'arrier
+    """
+    methods.backward()
+    return 'Moving backward'
+
+
+
+
+
+@app.route('/move_backward')
 def move_forward():
     """
     Cette fonction permet de faire une mauvement vers l'avant
@@ -28,17 +40,6 @@ def move_forward():
     #forward()
     methods.forward()
     return 'Moving forward'
-
-
-
-
-@app.route('/move_backward')
-def move_backward():
-    """
-    Cette fonction permet de faire une mauvement vers l'arrier
-    """
-    methods.backward()
-    return 'Moving backward'
 
 
 
