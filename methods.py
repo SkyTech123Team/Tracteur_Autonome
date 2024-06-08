@@ -14,6 +14,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 import io
 import picamera
+import microservo
 
 
 # Define GPIO pins
@@ -74,6 +75,7 @@ def stopCar():
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.LOW)
+    microservo.monter_bras()
 
 def turnRight():
     """
