@@ -5,7 +5,7 @@
 <h3>Auteurs : AIT ALI MHAMED SAADIA & SAFRANI Fatima Ezzahra & EL-MANANI Fatima </h3>
 
 
-<h3>Version : 2.0</h3>
+<h3>Version : 2.1</h3>
 
 """
 from flask import Flask, render_template,Response ,request, jsonify
