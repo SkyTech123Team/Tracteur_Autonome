@@ -29,6 +29,10 @@ try:
             print("Exiting")
             stop_thread = True
             break
+        elif  command == 'm':
+            methods.monter_bras()
+        elif  command == 'l':
+            methods.descendre_bras()
         else:
             print("Invalid command. Try again.")
 except KeyboardInterrupt:

@@ -13,12 +13,27 @@ from flask import Flask, render_template,Response ,request, jsonify
 import io
 import picamera
 from time import sleep
-
-
-#from moveCar1 import forward, backward, turnRight180, turnLeft180, stopCar
 import methods 
 
 app = Flask(__name__)
+
+@app.route('/up')
+def bras_up():
+    """
+    Cette fonction permet de faire monter la charrue
+    """
+    methods.monter_bras()
+    return 'Charrue monter'
+
+@app.route('/down')
+def bras_down():
+    """
+    Cette fonction permet de faire decsendre la charrue
+    """
+    methods.descendre_bras()
+    return 'Charrue decsender'
+
+
 
 @app.route('/move_forward')
 def move_backward():
@@ -76,6 +91,7 @@ def stop():
     Cette fonction permet de faire stopper la vehicule
     """
     methods.stopCar()
+    methods.monter_bras()
     return 'Stopping'
 
 

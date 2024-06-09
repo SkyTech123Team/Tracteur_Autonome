@@ -1,9 +1,9 @@
 """
 <h3> Ce fichier contient les differentes mouvements possibles qu'on peut effectuer avec la
-vehecule afin de la lie avec la camera .</h3>
+vehecule afin de la lie avec la camera ainsi toutes les signales de la vehecule.</h3>
 
 
-<h3>Auteurs : EL-MANANI Fatima & ABDOU Ali & SAFRANI Fatima Ezzahra</h3>
+<h3>Auteurs : EL-MANANI Fatima & ABDOU Ali & SAFRANI Fatima Ezzahra & AIT ALI MHAMED SAADIA</h3>
 
 
 <h3>Version : 3.0</h3>
@@ -39,10 +39,17 @@ direction  = "l"
 condition = threading.Condition()
 
 
-
+GPIO.setwarnings(False)
+#GPIO.setmode(GPIO.BOARD)# donner un pin a partir du board du raspberry pi
+GPIO.setup(21, GPIO.OUT)  
+l = GPIO.PWM(21, 50)# le pin 12 c est lui qui est responssable sur le signal
+l.start(0)
 
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
+GPIO.setup(3, GPIO.OUT)
+GPIO.setup(19, GPIO.OUT)
+GPIO.setup(9, GPIO.OUT)
 GPIO.setup(in1, GPIO.OUT)
 GPIO.setup(in2, GPIO.OUT)
 GPIO.setup(en, GPIO.OUT)
@@ -62,6 +69,24 @@ p_a = GPIO.PWM(en_a, 1000)
 p.start(25)
 p_a.start(25)
 
+def monter_bras():
+    """
+    Cette fonction permet de monter la bras du microservo
+    """
+    
+    p.ChangeDutyCycle(3)  # Position pour monter le bras
+    sleep(1)  # Attendre 1 seconde
+    p.ChangeDutyCycle(0)  # Arreter le servo après le mouvement
+    sleep(1)  # Attendre 1 seconde
+
+def descendre_bras():
+    """
+    Cette fonction permet de descendre la bras du microservo
+    """
+    p.ChangeDutyCycle(12)  # Position pour descendre le bras
+    sleep(1)  # Attendre 1 seconde
+    p.ChangeDutyCycle(0)  # Arrêter le servo après le mouvement
+    sleep(1)  # Attendre 1 seconde
 # Control functions
 def backward():
     GPIO.output(in1, GPIO.LOW)
@@ -80,19 +105,43 @@ def stopCar():
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.LOW)
+    signalStop()
 
 def turnRight():
+    signalRight()
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
 def turnLeft():
+    signalLeft()
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
     
+def signalRight():
+    for _ in range(4):
+        GPIO.output(3, GPIO.HIGH)  # Allumer le signal de droite
+        time.sleep(0.5)            # Attendre 0.5 seconde
+        GPIO.output(3, GPIO.LOW)   # Éteindre le signal de droite
+        time.sleep(0.5)            # Attendre 0.5 seconde
+
+def signalLeft():
+    for _ in range(4):
+        GPIO.output(19, GPIO.HIGH)  # Allumer le signal de gauche
+        time.sleep(0.5)             # Attendre 0.5 seconde
+        GPIO.output(19, GPIO.LOW)   # Éteindre le signal de gauche
+        time.sleep(0.5)             # Attendre 0.5 seconde
+
+def signalStop():
+    for _ in range(4):
+        GPIO.output(9, GPIO.HIGH)  # Allumer le signal de stop
+        time.sleep(0.5)            # Attendre 0.5 seconde
+        GPIO.output(9, GPIO.LOW)   # Éteindre le signal de stop
+        time.sleep(0.5) 
+
 def slowDownCar():
     """
     Cette fonction permet de faire ralentir le tracteur
@@ -259,6 +308,8 @@ def cover_rectangle(length, width):
             # Turn 90 degrees to the right again to realign for the next length pass
             turnRight()
             sleep(1)  # Short delay to stabilize after turn
+            
+
 def generate_frames():
     try :
         with picamera.PiCamera() as camera :

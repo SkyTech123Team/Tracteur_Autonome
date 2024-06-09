@@ -28,6 +28,9 @@ temp1=1
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
 GPIO.setup(in2,GPIO.OUT)
+GPIO.setup(3,GPIO.OUT)
+GPIO.setup(19,GPIO.OUT)
+GPIO.setup(9,GPIO.OUT)
 GPIO.setup(in3,GPIO.OUT)
 GPIO.setup(in4,GPIO.OUT)
 GPIO.setup(en,GPIO.OUT)
@@ -86,10 +89,12 @@ def stopCar():
     Cette fonction permet de faire stopper la vehicule
     """
     print("stop")
+    
     GPIO.output(in1,GPIO.LOW)
     GPIO.output(in2,GPIO.LOW)
     GPIO.output(in3,GPIO.LOW)
     GPIO.output(in4,GPIO.LOW)
+    signalStop()
     x='z'
     
 
@@ -123,7 +128,26 @@ def mediumUpCar():
     p.ChangeDutyCycle(50)
     x='z'
 
+def signalRight():
+    for _ in range(3):
+        GPIO.output(3, GPIO.HIGH)  # Allumer le signal de droite
+        time.sleep(0.5)            # Attendre 0.5 seconde
+        GPIO.output(3, GPIO.LOW)   # Éteindre le signal de droite
+        time.sleep(0.5)            # Attendre 0.5 seconde
 
+def signalLeft():
+    for _ in range(3):
+        GPIO.output(19, GPIO.HIGH)  # Allumer le signal de gauche
+        time.sleep(0.5)             # Attendre 0.5 seconde
+        GPIO.output(19, GPIO.LOW)   # Éteindre le signal de gauche
+        time.sleep(0.5)             # Attendre 0.5 seconde
+
+def signalStop():
+    for _ in range(3):
+        GPIO.output(9, GPIO.HIGH)  # Allumer le signal de stop
+        time.sleep(0.5)            # Attendre 0.5 seconde
+        GPIO.output(9, GPIO.LOW)   # Éteindre le signal de stop
+        time.sleep(0.5) 
 
 def turnRight180():
     """
@@ -134,6 +158,7 @@ def turnRight180():
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)  # Reculer moteur droit
     GPIO.output(in4, GPIO.LOW)
+    signalRight()
     time.sleep(0.642)
     stopCar()
     forward()
@@ -145,10 +170,12 @@ def turnLeft180():
     Cette fonction permet de tourner a gauche de 180 degree 
     """
     print("Left 180")
+    
     GPIO.output(in1, GPIO.HIGH)  # Reculer moteur gauche
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)  # Avancer moteur droit 
     GPIO.output(in4, GPIO.HIGH)
+    signalLeft()
     #temp1 = 1
     #x = 'z'
     time.sleep(0.642)

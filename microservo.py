@@ -5,7 +5,7 @@
 <h3>Auteurs : SAFRANI Fatima Ezzahra</h3>
 
 
-<h3>Version : 1.0</h3>
+<h3>Version : 1.1</h3>
 
 """
 
@@ -13,10 +13,11 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 # Donner le pins avec lesquels le microservo est lie
+
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)# donner un pin a partir du board du raspberry pi
-GPIO.setup(12, GPIO.OUT)  
-p = GPIO.PWM(12, 50)# le pin 12 c est lui qui est responssable sur le signal
+GPIO.setmode(GPIO.BCM)# donner un pin a partir du board du raspberry pi
+GPIO.setup(21, GPIO.OUT)  
+p = GPIO.PWM(21, 50)# le pin 12 c est lui qui est responssable sur le signal
 p.start(0)
 
 def monter_bras():
