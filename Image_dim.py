@@ -60,7 +60,7 @@ def process_image(image_path):
     cnts = [x for x in cnts if cv2.contourArea(x) > 500]
 
     # Reference object dimensions
-    # Here for reference I have used a 2cm x 2cm square
+    # Here for reference I have used a 17cm x 17cm square
     ref_object = cnts[0]
     box = cv2.minAreaRect(ref_object)
     box = cv2.boxPoints(box)

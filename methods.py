@@ -20,15 +20,15 @@ import threading
 import ultrasonic
 
 # Define GPIO pins
-in1 = 24
-in2 = 23
-en = 5
-in3 = 22
-in4 = 27
-en_a = 18
+IN1 = 24
+IN2 = 23
+EN = 5
+IN3 = 22
+IN4 = 27
+EN_a = 18
 
 # Global variables
-iwtssb = 0 
+DISTANCE = 0 
 stop_thread = False
 remaining_time = 0
 start_time = time.time()
@@ -42,15 +42,15 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 # Ensure all pins are low at startup
-pins = [in1, in2, in3, in4, en, en_a, 3, 19, 9, 21]
+pins = [IN1, IN2, IN3, IN4, EN, EN_a, 3, 19, 9, 21]
 for pin in pins:
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, GPIO.LOW)
 
 # PWM setup
 try:
-    p = GPIO.PWM(en, 1000)
-    p_a = GPIO.PWM(en_a, 1000)
+    p = GPIO.PWM(EN, 1000)
+    p_a = GPIO.PWM(EN_a, 1000)
     q = GPIO.PWM(21, 50)  # Ensure pin 21 is not already in use
 except RuntimeError as e:
     print(f"PWM setup error: {e}")
@@ -79,39 +79,56 @@ def descendre_bras():
 
 # Control functions
 def backward():
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
+    """
+    Cette fonction permet de reculer 
+    """
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
 
 def forward():
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
+    """
+    Cette fonction permet d'avancer en avant
+    """
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
 
 def stopCar():
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.LOW)
-    signalStop()
+    """
+    Cette fonction permet d'arreter l'auto
+    """
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.LOW)
+    #signalStop()
 
 def turnRight():
-    signalRight()
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
+    """
+    Cette fonction permet de tourner a driote
+    """
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+    #signalRight()
 
 def turnLeft():
-    signalLeft()
-    GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in3, GPIO.HIGH)
-    GPIO.output(in4, GPIO.LOW)
-
+    """
+    Cette fonction permet de tourner a gauche
+    """
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
+    #ignalLeft()
 def signalRight():
+    """
+    Cette fonction permet d'allumer le signal de droite
+    """
     for _ in range(4):
         GPIO.output(3, GPIO.HIGH)  # Allumer le signal de droite
         time.sleep(0.5)            # Attendre 0.5 seconde
@@ -119,6 +136,9 @@ def signalRight():
         time.sleep(0.5)            # Attendre 0.5 seconde
 
 def signalLeft():
+    """
+    Cette fonction permet d'allumer le signal de gauche
+    """
     for _ in range(4):
         GPIO.output(19, GPIO.HIGH)  # Allumer le signal de gauche
         time.sleep(0.5)             # Attendre 0.5 seconde
@@ -126,6 +146,9 @@ def signalLeft():
         time.sleep(0.5)             # Attendre 0.5 seconde
 
 def signalStop():
+    """
+    Cette fonction permet d'allumer le signal de stop
+    """
     for _ in range(4):
         GPIO.output(9, GPIO.HIGH)  # Allumer le signal de stop
         time.sleep(0.5)            # Attendre 0.5 seconde
@@ -149,6 +172,9 @@ def speedUpCar():
     p_a.ChangeDutyCycle(75)
 
 def mediumUpCar():
+    """
+    Cette fonction permet de descendre le bras du microservo
+    """
     print("medium")
     p.ChangeDutyCycle(50)
     p_a.ChangeDutyCycle(50)
@@ -157,10 +183,10 @@ def turnLeft90(t):
     """
     Cette fonction permet de tourner a gauche de 90 degree 
     """
-    GPIO.output(in1, GPIO.HIGH)  # Reculer moteur gauche
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)  # Avancer moteur droit 
-    GPIO.output(in4, GPIO.HIGH)
+    GPIO.output(IN1, GPIO.HIGH)  # Reculer moteur gauche
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)  # Avancer moteur droit 
+    GPIO.output(IN4, GPIO.HIGH)
     #used to be 0.28
     time.sleep(t)
     stopCar()
@@ -169,11 +195,11 @@ def turnRight90():
     """
     Cette fonction permet de tourner a droite de 90 degree 
     """
-    GPIO.output(in1, GPIO.LOW)  # Avancer moteur gauche
-    GPIO.output(in2, GPIO.HIGH)
-    GPIO.output(in3, GPIO.HIGH)  # Reculer moteur droit
-    GPIO.output(in4, GPIO.LOW)
-    time.sleep(0.82)
+    GPIO.output(IN1, GPIO.LOW)  # Avancer moteur gauche
+    GPIO.output(IN2, GPIO.HIGH)
+    GPIO.output(IN3, GPIO.HIGH)  # Reculer moteur droit
+    GPIO.output(IN4, GPIO.LOW)
+    time.sleep(2)
     stopCar()
 
 def continuous_measure():
@@ -187,8 +213,8 @@ def continuous_measure():
     """
     global stop, remaining_time, start_time, elapsed_time
     while not stop_thread:
-        distance = ultrasonic.mesure_distance_thread()
-        if distance < 20:
+        DISTANCE = ultrasonic.mesure_distance_thread()
+        if DISTANCE < 20:
             if not stop:
                 elapsed_time = time.time() - start_time
                 remaining_time = remaining_time - elapsed_time
@@ -203,7 +229,10 @@ def continuous_measure():
 distance_thread = threading.Thread(target=continuous_measure)
 distance_thread.start()
 
-def right():
+def parcourRight():
+    """
+    Cette fonction permet de faire un aller retour avec rotation a droite
+    """
     turnRight90()
     forward()
     sleep(0.25)
@@ -212,43 +241,51 @@ def right():
     turnRight90()
     stopCar()
 
-def left():
-    turnLeft90(0.56)
+def parcourleft():
+    """
+    Cette fonction permet de faire un aller retour avec rotation a gauche
+    """
+    turnLeft90(1.5)
     forward()
     sleep(0.25)
     stopCar()
     sleep(0.5)
-    turnLeft90(0.56)
+    turnLeft90(1.5)
     stopCar()
 
-def lsb():
+def couverture():
     """
     Cette methode controle les mouvements de la voiture selon la presence d'un obstacle  
     """
-    global stop, remaining_time, start_time, direction, iwtssb, i
+    global stop, remaining_time, start_time, direction, DISTANCE, i
     while not stop_thread:
         with condition:
             while stop:
                 condition.wait(1)
-            if remaining_time > 0:
+            if remaining_time > 0 and i <2 : 
                 cover()
                 if remaining_time <= 0:
                     if direction == "l":
-                        left()
-                        direction = "l"
+                        parcourleft()
+                        direction = "r"    
+                        i = i+ 1
                     else:
-                        right()
-                        direction = "l"
+                        parcourRight()
+                        direction = "l"            
+                        i = i +1
+            remaining_time  =  DISTANCE
+                    
+                        
 
-move_thread = threading.Thread(target=lsb)
+move_thread = threading.Thread(target=couverture)
 move_thread.start()
 
 def move_forward_distance(total_time):
     """
     Cette fonction permet de faire une mauvement a partir d une distance donnee
     """
-    global remaining_time, iwtssb
-    iwtssb = total_time
+    global remaining_time, DISTANCE
+    DISTANCE = total_time
     remaining_time = total_time
 
 def cover():

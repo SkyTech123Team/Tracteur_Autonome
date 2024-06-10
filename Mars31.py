@@ -1,9 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-from time import sleep
-import methods 
-import threading
-import ultrasonic
 """
 <h3>Ce fichier contient les differentes mouvements possibles qu'on peut effectuer avec la vehicule.</h3>
 
@@ -13,6 +9,11 @@ import ultrasonic
 
 <h3>Version : 1.0</h3>
 """
+
+from time import sleep
+import methods 
+import threading
+import ultrasonic
 
 speed = 1
 
