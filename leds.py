@@ -1,3 +1,13 @@
+"""
+<h3>Ce fichier contient les differentes signales  possibles que peut effectuer la véhicule à savoir celle de droite, gauche et de stop.</h3>
+
+
+<h3>Auteurs : AIT ALI M'HAMED SAÂDIA </h3>
+
+
+<h3>Version : 1.0</h3>
+"""
+
 import RPi.GPIO as GPIO
 import time
 

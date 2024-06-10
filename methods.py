@@ -27,73 +27,63 @@ in3 = 22
 in4 = 27
 en_a = 18
 
-#Variable globales
+# Global variables
 iwtssb = 0 
 stop_thread = False
 remaining_time = 0
-start_time =time.time()
+start_time = time.time()
 elapsed_time = 0
 stop = True
 i = 1
 direction  = "l"
 condition = threading.Condition()
 
-
 GPIO.setwarnings(False)
-#GPIO.setmode(GPIO.BOARD)# donner un pin a partir du board du raspberry pi
-GPIO.setup(21, GPIO.OUT)  
-l = GPIO.PWM(21, 50)# le pin 12 c est lui qui est responssable sur le signal
-l.start(0)
-
-# GPIO setup
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(3, GPIO.OUT)
-GPIO.setup(19, GPIO.OUT)
-GPIO.setup(9, GPIO.OUT)
-GPIO.setup(in1, GPIO.OUT)
-GPIO.setup(in2, GPIO.OUT)
-GPIO.setup(en, GPIO.OUT)
-GPIO.setup(in3, GPIO.OUT)
-GPIO.setup(in4, GPIO.OUT)
-GPIO.setup(en_a, GPIO.OUT)
 
 # Ensure all pins are low at startup
-GPIO.output(in1, GPIO.LOW)
-GPIO.output(in2, GPIO.LOW)
-GPIO.output(in3, GPIO.LOW)
-GPIO.output(in4, GPIO.LOW)
+pins = [in1, in2, in3, in4, en, en_a, 3, 19, 9, 21]
+for pin in pins:
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, GPIO.LOW)
 
 # PWM setup
-p = GPIO.PWM(en, 1000)
-p_a = GPIO.PWM(en_a, 1000)
-p.start(25)
-p_a.start(25)
+try:
+    p = GPIO.PWM(en, 1000)
+    p_a = GPIO.PWM(en_a, 1000)
+    q = GPIO.PWM(21, 50)  # Ensure pin 21 is not already in use
+except RuntimeError as e:
+    print(f"PWM setup error: {e}")
+else:
+    p.start(25)
+    p_a.start(25)
+    q.start(0)
 
 def monter_bras():
     """
-    Cette fonction permet de monter la bras du microservo
+    Cette fonction permet de monter le bras du microservo
     """
-    
-    p.ChangeDutyCycle(3)  # Position pour monter le bras
+    q.ChangeDutyCycle(3)  # Position pour monter le bras
     sleep(1)  # Attendre 1 seconde
-    p.ChangeDutyCycle(0)  # Arreter le servo après le mouvement
+    q.ChangeDutyCycle(0)  # Arrêter le servo après le mouvement
     sleep(1)  # Attendre 1 seconde
 
 def descendre_bras():
     """
-    Cette fonction permet de descendre la bras du microservo
+    Cette fonction permet de descendre le bras du microservo
     """
-    p.ChangeDutyCycle(12)  # Position pour descendre le bras
+    q.ChangeDutyCycle(12)  # Position pour descendre le bras
     sleep(1)  # Attendre 1 seconde
-    p.ChangeDutyCycle(0)  # Arrêter le servo après le mouvement
+    q.ChangeDutyCycle(0)  # Arrêter le servo après le mouvement
     sleep(1)  # Attendre 1 seconde
+
 # Control functions
 def backward():
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
-    
+
 def forward():
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in2, GPIO.LOW)
@@ -120,7 +110,7 @@ def turnLeft():
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
-    
+
 def signalRight():
     for _ in range(4):
         GPIO.output(3, GPIO.HIGH)  # Allumer le signal de droite
@@ -179,14 +169,12 @@ def turnRight90():
     """
     Cette fonction permet de tourner a droite de 90 degree 
     """
- 
     GPIO.output(in1, GPIO.LOW)  # Avancer moteur gauche
     GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.HIGH)  # Reculer moteur droit
     GPIO.output(in4, GPIO.LOW)
     time.sleep(0.82)
     stopCar()
-
 
 def continuous_measure():
     """
@@ -195,25 +183,23 @@ def continuous_measure():
         1-Voiture en train de rouler : 'notify' la voiture pour arreter et met a jour le temps restant pour arriver
         a la destination qui va etre utiliser pour reprendre une fois l'obstacle 'is cleared '?
         2-Sinon , le programme continue a tester les valeurs recues
-    -Une fois l'obstacle n'est plus preent , la fonction 'notify' la voiture pour reprendre son chemin
+    -Une fois l'obstacle n'est plus present, la fonction 'notify' la voiture pour reprendre son chemin
     """
-    global stop,remaining_time , start_time, elapsed_time
+    global stop, remaining_time, start_time, elapsed_time
     while not stop_thread:
         distance = ultrasonic.mesure_distance_thread()
-        if ( distance < 20 ) :
-            if (not stop):
+        if distance < 20:
+            if not stop:
                 elapsed_time = time.time() - start_time
                 remaining_time = remaining_time - elapsed_time
                 stopCar()
                 with condition:
                     stop = True
                     condition.notify_all()
-        else :
+        else:
             with condition:
                 stop = False
-        
-    
-                                
+
 distance_thread = threading.Thread(target=continuous_measure)
 distance_thread.start()
 
@@ -225,7 +211,6 @@ def right():
     sleep(0.5)
     turnRight90()
     stopCar()
-    
 
 def left():
     turnLeft90(0.56)
@@ -235,49 +220,46 @@ def left():
     sleep(0.5)
     turnLeft90(0.56)
     stopCar()
-    
+
 def lsb():
     """
     Cette methode controle les mouvements de la voiture selon la presence d'un obstacle  
     """
-    global stop,remaining_time,start_time,direction ,iwtssb,i
-    while not stop_thread :
+    global stop, remaining_time, start_time, direction, iwtssb, i
+    while not stop_thread:
         with condition:
             while stop:
-                condition.wait(1)  
+                condition.wait(1)
             if remaining_time > 0:
                 cover()
-                if remaining_time <= 0  :
-                    if (direction == "l"):
+                if remaining_time <= 0:
+                    if direction == "l":
                         left()
                         direction = "l"
-                    else :
+                    else:
                         right()
                         direction = "l"
-                #move_forward_distance(iwtssb)
-                    
-                          
+
 move_thread = threading.Thread(target=lsb)
 move_thread.start()
+
 def move_forward_distance(total_time):
     """
     Cette fonction permet de faire une mauvement a partir d une distance donnee
     """
-    global remaining_time , iwtssb
+    global remaining_time, iwtssb
     iwtssb = total_time
     remaining_time = total_time
 
 def cover():
-    global remaining_time,start_time
+    global remaining_time, start_time
     start_time = time.time()
     forward()
-    condition.wait(remaining_time) 
+    condition.wait(remaining_time)
     stopCar()
     elapsed_time = time.time() - start_time
     remaining_time -= elapsed_time
     sleep(0.5)
-    
-    
 
 def cover_rectangle(length, width):
     """
@@ -285,7 +267,7 @@ def cover_rectangle(length, width):
     """
     pass_width = 1  # Width of each pass, adjust based on your tractor's effective width
     number_of_passes = int(width / pass_width)
-    
+
     for pass_num in range(number_of_passes):
         # Move forward the full length of the rectangle
         move_forward_distance(length)
@@ -294,33 +276,18 @@ def cover_rectangle(length, width):
         sleep(1)  # Short delay to stabilize after turn
         turnRight()
         sleep(1)  # Short delay to stabilize after turn
-        
+
         # Move forward the full length of the rectangle
         move_forward_distance(length)
-        
+
         # Prepare for the next pass, if there's more area to cover
         if pass_num < number_of_passes - 1:
-            # Turn 90 degrees to the right to align for the next pass
+            # Turn 90 degrees to the right to move over for the next pass
             turnRight()
             sleep(1)  # Short delay to stabilize after turn
             # Move forward the width of one pass
             move_forward_distance(pass_width)
-            # Turn 90 degrees to the right again to realign for the next length pass
-            turnRight()
+            # Turn 90 degrees to the left to align with the next pass
+            turnLeft()
             sleep(1)  # Short delay to stabilize after turn
-            
 
-def generate_frames():
-    try :
-        with picamera.PiCamera() as camera :
-            camera.resolution = (640,480)
-            camera.framerate = 24
-            stream = io.BytesIO()
-            
-            for _ in camera.capture_continuous(stream,'jpeg',use_video_port=True):
-                stream.seek(0)
-                yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + stream.read() + b'\r\n'
-                stream.seek(0)
-                stream.truncate()
-    except Exception as e:
-        print(f"An error occurred: {e}")

@@ -20,6 +20,7 @@ GPIO.setup(21, GPIO.OUT)
 p = GPIO.PWM(21, 50)# le pin 12 c est lui qui est responssable sur le signal
 p.start(0)
 
+
 def monter_bras():
     """
     Cette fonction permet de monter la bras du microservo
